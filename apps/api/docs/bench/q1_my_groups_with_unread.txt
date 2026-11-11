@@ -1,0 +1,12 @@
+-- q1_my_groups_with_unread on seed: best=3.54 ms mean=5.46 ms
+GroupAggregate  (cost=8.37..8.42 rows=3 width=24) (actual time=0.028..0.031 rows=3 loops=1)
+  Group Key: group_id
+  ->  Sort  (cost=8.37..8.38 rows=3 width=32) (actual time=0.024..0.024 rows=3 loops=1)
+        Sort Key: group_id
+        Sort Method: quicksort  Memory: 25kB
+        ->  Index Scan using notifications_user_id_468e288d on notifications  (cost=0.28..8.35 rows=3 width=32) (actual time=0.015..0.018 rows=3 loops=1)
+              Index Cond: (user_id = '01a1cb76-bf85-7f66-ad1f-98c453d8f924'::uuid)
+              Filter: ((group_id IS NOT NULL) AND (read_at IS NULL))
+              Rows Removed by Filter: 1
+Planning Time: 0.117 ms
+Execution Time: 0.062 ms

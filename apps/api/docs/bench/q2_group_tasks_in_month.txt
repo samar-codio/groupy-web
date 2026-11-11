@@ -1,0 +1,24 @@
+-- q2_group_tasks_in_month on seed: best=8.25 ms mean=10.35 ms
+Sort  (cost=2054.13..2054.94 rows=324 width=24) (actual time=2.194..2.207 rows=151 loops=1)
+  Sort Key: tasks.start_at
+  Sort Method: quicksort  Memory: 32kB
+  ->  Append  (cost=38.98..2040.62 rows=324 width=24) (actual time=0.410..2.147 rows=151 loops=1)
+        ->  Bitmap Heap Scan on tasks  (cost=38.98..1799.34 rows=270 width=24) (actual time=0.409..1.692 rows=124 loops=1)
+              Recheck Cond: ((group_id = '01a1cb76-bfeb-7f8b-acb6-1a1c62041d9b'::uuid) AND (start_at < '2026-12-01 00:00:00+00'::timestamp with time zone) AND (NOT all_day) AND (deleted_at IS NULL) AND (rrule IS NULL))
+              Filter: ((end_at >= '2026-11-01 00:00:00+00'::timestamp with time zone) OR (end_at IS NULL))
+              Rows Removed by Filter: 1238
+              Heap Blocks: exact=999
+              ->  Bitmap Index Scan on tasks_group_start  (cost=0.00..38.91 rows=1049 width=0) (actual time=0.250..0.250 rows=1362 loops=1)
+                    Index Cond: ((group_id = '01a1cb76-bfeb-7f8b-acb6-1a1c62041d9b'::uuid) AND (start_at < '2026-12-01 00:00:00+00'::timestamp with time zone))
+        ->  Bitmap Heap Scan on tasks tasks_1  (cost=4.96..231.52 rows=53 width=24) (actual time=0.109..0.415 rows=27 loops=1)
+              Recheck Cond: ((group_id = '01a1cb76-bfeb-7f8b-acb6-1a1c62041d9b'::uuid) AND (start_date < '2026-11-30'::date) AND all_day AND (deleted_at IS NULL) AND (rrule IS NULL))
+              Filter: ((end_date >= '2026-11-01'::date) OR (end_date IS NULL))
+              Rows Removed by Filter: 288
+              Heap Blocks: exact=285
+              ->  Bitmap Index Scan on tasks_group_sdate  (cost=0.00..4.95 rows=66 width=0) (actual time=0.050..0.050 rows=315 loops=1)
+                    Index Cond: ((group_id = '01a1cb76-bfeb-7f8b-acb6-1a1c62041d9b'::uuid) AND (start_date < '2026-11-30'::date))
+        ->  Index Scan using tasks_group_recur on tasks tasks_2  (cost=0.12..8.14 rows=1 width=24) (actual time=0.020..0.020 rows=0 loops=1)
+              Index Cond: (group_id = '01a1cb76-bfeb-7f8b-acb6-1a1c62041d9b'::uuid)
+              Filter: ((recur_until IS NULL) OR (recur_until >= '2026-11-01 00:00:00+00'::timestamp with time zone))
+Planning Time: 0.373 ms
+Execution Time: 2.262 ms

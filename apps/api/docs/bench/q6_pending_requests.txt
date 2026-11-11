@@ -1,0 +1,16 @@
+-- q6_pending_requests on seed: best=4.61 ms mean=5.53 ms
+Sort  (cost=69.18..69.24 rows=25 width=469) (actual time=0.247..0.251 rows=24 loops=1)
+  Sort Key: task_requests.created_at
+  Sort Method: quicksort  Memory: 32kB
+  ->  Hash Join  (cost=12.97..68.60 rows=25 width=469) (actual time=0.142..0.206 rows=24 loops=1)
+        Hash Cond: (task_requests.requested_by_id = users.id)
+        ->  Bitmap Heap Scan on task_requests  (cost=4.47..60.03 rows=25 width=315) (actual time=0.025..0.062 rows=24 loops=1)
+              Recheck Cond: ((group_id = '01a1cb76-bfeb-7f8b-acb6-1a1c62041d9b'::uuid) AND (status = 'pending'::text))
+              Heap Blocks: exact=20
+              ->  Bitmap Index Scan on task_requests_group_pending  (cost=0.00..4.46 rows=25 width=0) (actual time=0.015..0.016 rows=24 loops=1)
+                    Index Cond: (group_id = '01a1cb76-bfeb-7f8b-acb6-1a1c62041d9b'::uuid)
+        ->  Hash  (cost=6.00..6.00 rows=200 width=154) (actual time=0.099..0.100 rows=200 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 39kB
+              ->  Seq Scan on users  (cost=0.00..6.00 rows=200 width=154) (actual time=0.008..0.045 rows=200 loops=1)
+Planning Time: 0.578 ms
+Execution Time: 0.332 ms

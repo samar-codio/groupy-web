@@ -1,0 +1,10 @@
+{
+  "description": "Streamline university group management with a simplified, role-based platform for students to organize tasks, announcements, and files efficiently.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

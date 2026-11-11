@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# Secrets / local config — RULES.md §3.1: credentials never enter the repo.
+# DATABASE_URL, SECRET_KEY etc. live only in the environment.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---------------------------------------------------------------------------
+# Python — the virtualenv is rebuildable from pyproject.toml, ~100 MB here
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# ---------------------------------------------------------------------------
+# Test / lint caches
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ---------------------------------------------------------------------------
+# Local dev Postgres cluster — a LIVE DATA DIRECTORY, never commit.
+# Real rows, WAL and per-database files; pushing it would bloat history
+# permanently (an LFS filter rule also matches its binaries).
+# ---------------------------------------------------------------------------
+.devdb/
+
+# ---------------------------------------------------------------------------
+# Node (context/ design surface)
+# ---------------------------------------------------------------------------
+node_modules/
+.pnpm-store/
+.cache/
+.vite/
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Editors / OS / tooling
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+.DS_Store
+*.swp
+.qoder/
+
+# ---------------------------------------------------------------------------
+# Logs & local artifacts
+# ---------------------------------------------------------------------------
+*.log
+logs/
+tmp/
+.tmp-*/
+
+# apps/api/docs/bench/ is DELIBERATELY tracked: it is the S1 acceptance
+# evidence (EXPLAIN ANALYZE for the six frozen queries) referenced by
+# RULES.md §9.

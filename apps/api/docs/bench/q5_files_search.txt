@@ -1,0 +1,44 @@
+-- q5_files_search on seed: best=10.23 ms mean=12.09 ms
+Limit  (cost=133.99..134.02 rows=12 width=364) (actual time=4.754..4.760 rows=20 loops=1)
+  ->  Sort  (cost=133.99..134.02 rows=12 width=364) (actual time=4.753..4.757 rows=20 loops=1)
+        Sort Key: files.created_at DESC
+        Sort Method: top-N heapsort  Memory: 33kB
+        ->  Nested Loop  (cost=11.74..133.78 rows=12 width=364) (actual time=0.144..4.680 rows=77 loops=1)
+              ->  Hash Join  (cost=11.45..27.78 rows=6 width=32) (actual time=0.048..0.071 rows=6 loops=1)
+                    Hash Cond: (groups.id = memberships.group_id)
+                    ->  Seq Scan on groups  (cost=0.00..15.00 rows=500 width=16) (actual time=0.006..0.012 rows=40 loops=1)
+                    ->  Hash  (cost=11.38..11.38 rows=6 width=16) (actual time=0.036..0.037 rows=6 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                          ->  Index Scan using memberships_user_active on memberships  (cost=0.28..11.38 rows=6 width=16) (actual time=0.008..0.010 rows=6 loops=1)
+                                Index Cond: (user_id = '01a1cb76-bf85-7f66-ad1f-98c453d8f924'::uuid)
+              ->  Index Scan using files_group_id_016a5e39 on files  (cost=0.29..17.41 rows=25 width=332) (actual time=0.049..0.753 rows=13 loops=6)
+                    Index Cond: (group_id = groups.id)
+                    Filter: ((deleted_at IS NULL) AND (status = 'ready'::text) AND (lower(filename) ~~ '%week37%'::text))
+                    Rows Removed by Filter: 489
+Planning Time: 0.615 ms
+Execution Time: 4.797 ms
+-- selective term (report_week37): planner chooses the trigram index
+Limit  (cost=123.74..123.74 rows=1 width=364) (actual time=2.866..2.871 rows=8 loops=1)
+  ->  Sort  (cost=123.74..123.74 rows=1 width=364) (actual time=2.864..2.867 rows=8 loops=1)
+        Sort Key: files.created_at DESC
+        Sort Method: quicksort  Memory: 27kB
+        ->  Nested Loop  (cost=100.07..123.73 rows=1 width=364) (actual time=2.552..2.851 rows=8 loops=1)
+              Join Filter: (files.group_id = groups.id)
+              ->  Nested Loop  (cost=99.92..118.88 rows=1 width=348) (actual time=2.521..2.799 rows=8 loops=1)
+                    Join Filter: (files.group_id = memberships.group_id)
+                    Rows Removed by Join Filter: 256
+                    ->  Index Scan using memberships_user_active on memberships  (cost=0.28..11.38 rows=6 width=16) (actual time=0.008..0.013 rows=6 loops=1)
+                          Index Cond: (user_id = '01a1cb76-bf85-7f66-ad1f-98c453d8f924'::uuid)
+                    ->  Materialize  (cost=99.64..107.33 rows=2 width=332) (actual time=0.416..0.459 rows=44 loops=6)
+                          ->  Bitmap Heap Scan on files  (cost=99.64..107.32 rows=2 width=332) (actual time=2.464..2.667 rows=44 loops=1)
+                                Recheck Cond: (lower(filename) ~~ '%report\_week37%'::text)
+                                Rows Removed by Index Recheck: 47
+                                Filter: ((deleted_at IS NULL) AND (status = 'ready'::text))
+                                Heap Blocks: exact=82
+                                ->  Bitmap Index Scan on files_filename_trgm  (cost=0.00..99.64 rows=2 width=0) (actual time=2.421..2.421 rows=91 loops=1)
+                                      Index Cond: (lower(filename) ~~ '%report\_week37%'::text)
+              ->  Index Only Scan using groups_pkey on groups  (cost=0.15..4.83 rows=1 width=16) (actual time=0.004..0.004 rows=1 loops=8)
+                    Index Cond: (id = memberships.group_id)
+                    Heap Fetches: 8
+Planning Time: 0.960 ms
+Execution Time: 3.058 ms

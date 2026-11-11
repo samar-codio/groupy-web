@@ -1,0 +1,25 @@
+[project]
+name = "groupy-api"
+version = "0.1.0"
+description = "Groupy backend — Django + DRF modular monolith (S1: data model)"
+requires-python = ">=3.12"
+
+# Rule 12 (RULES.md): every dependency pinned + justified.
+dependencies = [
+    "Django==5.2.19",          # web framework; LTS until 2028
+    "psycopg[binary]==3.3.8",  # Postgres driver (psycopg 3)
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",        # test runner
+    "pytest-django==4.14.0",  # pytest + Django integration
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+addopts = "-q"
+
+# S0 (walking skeleton) will decide uv vs pip and pin the Python version in
+# .mise.toml; until then: python3 -m venv .venv && pip install -e ".[dev]".
